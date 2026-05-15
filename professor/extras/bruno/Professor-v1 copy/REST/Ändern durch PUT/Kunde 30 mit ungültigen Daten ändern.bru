@@ -1,0 +1,57 @@
+meta {
+  name: Kunde 30 mit ungültigen Daten ändern
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{api_url}}/:id
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: 00000000-0000-0000-0000-000000000030
+}
+
+headers {
+  If-Match: "0"
+  X-Version: 1.0.0
+}
+
+body:json {
+  {
+      "nachname": "?!%",
+      "email": "email",
+      "kategorie" : 11,
+      "hasNewsletter": true,
+      "geburtsdatum": "3000-01-31",
+      "homepage": "https://www.test.de",
+      "geschlecht": "W",
+      "familienstand": "L",
+      "username": "invalid"
+  }
+  
+}
+
+assert {
+  res.status: eq 422
+  res.headers['content-type']: eq application/problem+json
+  res.body.status: eq 422
+  res.body.title: eq Unprocessable Content
+  res.body.instance: matches /api/00000000-0000-0000-0000-000000000030$
+  res.body.detail: isString
+}
+
+tests {
+  test('Problem Details', () => {
+      const { detail } = res.getBody();
+      const props = ['nachname', 'email', 'kategorie', 'geburtsdatum'];
+      props.forEach(prop => expect(detail).to.include(prop));
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

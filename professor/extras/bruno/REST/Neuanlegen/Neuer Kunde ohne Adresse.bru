@@ -1,0 +1,56 @@
+meta {
+  name: Neuer Kunde ohne Adresse
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{api_url}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  X-Version: 1.0.0
+}
+
+body:json {
+  {
+      "nachname": "?!$",
+      "email": "email",
+      "kategorie": 11,
+      "hasNewsletter": true,
+      "geburtsdatum": "3000-01-31",
+      "homepage": "https://www.test.de",
+      "geschlecht": "W",
+      "familienstand": "L",
+      "rechnungen": [{
+          "betrag": 0,
+          "waehrung": "EUR"
+      }],
+      "interessen": [
+          "R",
+          "L",
+          "L"
+      ]
+  }
+}
+
+assert {
+  res.status: eq 422
+  res.headers['content-type']: eq application/problem+json
+  res.body.detail: isString
+}
+
+tests {
+  test('Fehlermeldungen im Response Body', () => {
+    const { detail } = res.getBody();
+    const props = ['nachname', 'email', 'kategorie', 'geburtsdatum', 'interessen', 'adresse'];
+    props.forEach(prop => expect(detail).to.include(prop));
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,60 @@
+' Copyright (C) 2019 - present Juergen Zimmermann, Hochschule Karlsruhe
+'
+' This program is free software: you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation, either version 3 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License
+' along with this program.  If not, see <https://www.gnu.org/licenses/>.
+@startuml ProfessorWriteService
+
+skinparam classAttributeIconSize 0
+
+package org.springframework.stereotype {
+    annotation Service
+}
+
+package java.util {
+    class UUID
+}
+
+package com.acme.professor {
+    package entity {
+        class Professor << entity >>
+    }
+
+    package repository {
+        class ProfessorRepository << control >> << @Repository >>
+    }
+
+    package service #DDDDDD {
+        ' TODO Gradle: "exception" wird erst AsciiDoctor_plugin 5.x unterstuetzt
+        exception EmailExistsException
+
+        class ProfessorWriteService << control >> << @Service >> {
+            + create(professor: Professor): Professor
+            + update(professor: Professor, id: UUID)
+            + deleteById(id: UUID)
+        }
+
+        ProfessorWriteService o--> "1" ProfessorRepository : repo
+
+        ProfessorWriteService .right.> Professor
+        ProfessorWriteService .up.> Service
+        ProfessorWriteService .up.> UUID
+
+        ProfessorWriteService ..> EmailExistsException
+    }
+}
+
+hide empty members
+
+footer (c) Ali Arslan
+
+@enduml

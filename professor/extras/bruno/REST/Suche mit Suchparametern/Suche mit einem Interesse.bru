@@ -1,0 +1,43 @@
+meta {
+  name: Suche mit einem Interesse
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{api_url}}?interesse=L
+  body: none
+  auth: inherit
+}
+
+params:query {
+  interesse: L
+}
+
+headers {
+  Accept: application/json
+  X-Version: 1.0.0
+}
+
+assert {
+  res.status: eq 200
+  res.headers['content-type']: eq application/json
+  res.body: isArray
+  res.body: isNotEmpty
+}
+
+tests {
+  test('Body: Nachname enthaelt "i" und ID', () => {
+    res.getBody()
+      .forEach(kunde => {
+        const { interessen, id } = kunde;
+        expect(interessen).to.be.an('array').that.includes('L');
+        expect(id).to.be.a('string').that.matches(/[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/u);
+      });
+  });
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

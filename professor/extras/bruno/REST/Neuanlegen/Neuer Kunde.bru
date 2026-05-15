@@ -1,0 +1,51 @@
+meta {
+  name: Neuer Kunde
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{api_url}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  X-Version: 1.0.0
+}
+
+body:json {
+  {
+      "nachname": "Testpost",
+      "email": "Testpost@test.de",
+      "kategorie": 1,
+      "hasNewsletter": true,
+      "geburtsdatum": "2024-01-31",
+      "homepage": "https://www.test.de",
+      "geschlecht": "W",
+      "familienstand": "L",
+      "adresse": {
+          "plz": "12345",
+          "ort": "Testortpost"
+      },
+      "rechnungen": [{
+          "betrag": 1,
+          "waehrung": "EUR"
+      }],
+      "interessen": [
+          "R",
+          "L"
+      ]
+  }
+}
+
+assert {
+  res.status: eq 201
+  res.headers['location']: matches /api/[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$
+  res.body: isEmpty
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

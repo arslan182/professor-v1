@@ -1,0 +1,49 @@
+meta {
+  name: Neuer Kunde mit fehlerhaften Datentypen
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{api_url}}
+  body: json
+  auth: inherit
+}
+
+headers {
+  X-Version: 1.0.0
+}
+
+body:json {
+  {
+      "nachname": "Test",
+      "email": "Theo@Test.de",
+      "kategorie" : 1,
+      "hasNewsletter": true,
+      "geburtsdatum": "123",
+      "homepage": "123!",
+      "geschlecht": "W",
+      "familienstand": "L",
+      "adresse": {
+          "plz": 12345,
+          "ort": "Testort"
+      },
+      "rechnungen": [{
+          "betrag": 0,
+          "waehrung": "Xy"
+      }],
+      "interessen": [
+          "R",
+          "L"
+      ]
+  }
+}
+
+assert {
+  res.status: eq 400
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
